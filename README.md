@@ -24,15 +24,26 @@ URSM (Unrectified Stereo Matching) addresses the challenging problem of stereo d
 - **Iterative Refinement**: ConvGRU-based refinement for progressive disparity improvement
 - **End-to-End Trainable**: All components jointly optimized for maximum performance
 
+### 🚀 **NEW: CTC/HMM-based 1D Alignment** (Alternative Approach)
+- **1D Matching**: Transform 2D matching → 1D along epipolar curves (lower complexity)
+- **Blank Tokens**: Natural occlusion handling via CTC blank tokens (no forced matches)
+- **Monotonic Constraint**: Forward-only alignment eliminates impossible matches
+- **Error Correction**: Sparse parity check correction for geometric consistency
+- **See**: [CTC Alignment Documentation](docs/CTC_ALIGNMENT.md) for details
+
 ### 📊 Comprehensive Toolkit
 - **Training Framework**: Complete training pipeline with multi-GPU support
 - **Evaluation Tools**: Standard stereo metrics (EPE, Bad Pixels, D1-error)
 - **Inference Scripts**: Easy-to-use inference on custom image pairs
 - **Visualization**: Rich visualization tools for disparity and calibration parameters
 
-## Architecture
+## Architectures
 
-The URSM network consists of four main components:
+URSM provides two complementary approaches to stereo matching:
+
+### Approach 1: Calibration-Aware Matching (Original)
+
+The standard URSM network consists of four main components:
 
 1. **Feature Extractor**: Extracts robust multi-scale features from stereo images using residual blocks
 2. **Calibration Estimator**: Estimates calibration discrepancies (vertical offset, rotation, scale)
@@ -50,6 +61,33 @@ Right Image ─┘                        │
                                       │                                                       ├─ Uncertainty
                                       └───────────────────────────────────────────────────────└─ Calibration
 ```
+
+### Approach 2: CTC/HMM-based 1D Alignment (Alternative)
+
+An alternative approach that performs direct 1D matching:
+
+```
+Left Image ──┐
+             ├──> Feature Extractor ──> 1D Feature Sequences Along Epipolar Curves
+Right Image ─┘                          ↓
+                                        Bidirectional LSTM (Sequential Context)
+                                        ↓
+                                        CTC Alignment (with Blank Tokens)
+                                        ├─> Disparity Tokens [0, ..., max_disp-1]
+                                        └─> Blank Token (Occlusion/Uncertain)
+                                        ↓
+                                        Sparse Parity Check Error Correction
+                                        ↓
+                                        Final Disparity + Occlusion Mask
+```
+
+**Key Differences**:
+- Uses 1D alignment instead of 2D cost volume (more efficient)
+- Blank tokens for natural occlusion handling (no forced matches)
+- Monotonic constraint enforced by CTC (eliminates impossible matches)
+- Sparse parity check correction (geometric consistency)
+
+See [CTC Alignment Documentation](docs/CTC_ALIGNMENT.md) for detailed explanation.
 
 ## Installation
 
