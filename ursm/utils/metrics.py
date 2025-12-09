@@ -28,12 +28,13 @@ def compute_epe(pred_disparity, gt_disparity, mask=None):
     error = torch.abs(pred_disparity - gt_disparity)
     
     # Create mask for valid pixels
+    MAX_VALID_DISPARITY = 1e6  # Large finite value instead of infinity
     if mask is None:
-        mask = (gt_disparity > 0) & (gt_disparity < float('inf'))
+        mask = (gt_disparity > 0) & (gt_disparity < MAX_VALID_DISPARITY)
     else:
         if isinstance(mask, np.ndarray):
             mask = torch.from_numpy(mask)
-        mask = mask & (gt_disparity > 0) & (gt_disparity < float('inf'))
+        mask = mask & (gt_disparity > 0) & (gt_disparity < MAX_VALID_DISPARITY)
     
     # Compute mean error over valid pixels
     if mask.sum() > 0:
@@ -67,12 +68,13 @@ def compute_bad_pixels(pred_disparity, gt_disparity, threshold=3.0, mask=None):
     error = torch.abs(pred_disparity - gt_disparity)
     
     # Create mask for valid pixels
+    MAX_VALID_DISPARITY = 1e6  # Large finite value instead of infinity
     if mask is None:
-        mask = (gt_disparity > 0) & (gt_disparity < float('inf'))
+        mask = (gt_disparity > 0) & (gt_disparity < MAX_VALID_DISPARITY)
     else:
         if isinstance(mask, np.ndarray):
             mask = torch.from_numpy(mask)
-        mask = mask & (gt_disparity > 0) & (gt_disparity < float('inf'))
+        mask = mask & (gt_disparity > 0) & (gt_disparity < MAX_VALID_DISPARITY)
     
     # Compute bad pixels
     bad_pixels = (error > threshold) & mask
@@ -109,16 +111,21 @@ def compute_d1_error(pred_disparity, gt_disparity, mask=None):
     error = torch.abs(pred_disparity - gt_disparity)
     
     # Create mask for valid pixels
+    MAX_VALID_DISPARITY = 1e6  # Large finite value instead of infinity
     if mask is None:
-        mask = (gt_disparity > 0) & (gt_disparity < float('inf'))
+        mask = (gt_disparity > 0) & (gt_disparity < MAX_VALID_DISPARITY)
     else:
         if isinstance(mask, np.ndarray):
             mask = torch.from_numpy(mask)
-        mask = mask & (gt_disparity > 0) & (gt_disparity < float('inf'))
+        mask = mask & (gt_disparity > 0) & (gt_disparity < MAX_VALID_DISPARITY)
+    
+    # D1 error thresholds (KITTI standard)
+    D1_THRESHOLD_ABS = 3.0
+    D1_THRESHOLD_REL = 0.05
     
     # D1 error: (error > 3) AND (error / gt > 0.05)
-    threshold_abs = 3.0
-    threshold_rel = 0.05
+    threshold_abs = D1_THRESHOLD_ABS
+    threshold_rel = D1_THRESHOLD_REL
     
     bad_pixels = ((error > threshold_abs) & (error / (gt_disparity + 1e-8) > threshold_rel)) & mask
     
@@ -153,12 +160,13 @@ def compute_threshold_accuracy(pred_disparity, gt_disparity, threshold=1.0, mask
     error = torch.abs(pred_disparity - gt_disparity)
     
     # Create mask for valid pixels
+    MAX_VALID_DISPARITY = 1e6  # Large finite value instead of infinity
     if mask is None:
-        mask = (gt_disparity > 0) & (gt_disparity < float('inf'))
+        mask = (gt_disparity > 0) & (gt_disparity < MAX_VALID_DISPARITY)
     else:
         if isinstance(mask, np.ndarray):
             mask = torch.from_numpy(mask)
-        mask = mask & (gt_disparity > 0) & (gt_disparity < float('inf'))
+        mask = mask & (gt_disparity > 0) & (gt_disparity < MAX_VALID_DISPARITY)
     
     # Compute good pixels
     good_pixels = (error <= threshold) & mask

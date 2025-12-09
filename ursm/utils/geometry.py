@@ -146,7 +146,9 @@ def compute_epipolar_error(
 def triangulate_points(
     disparity,
     baseline=1.0,
-    focal_length=1000.0
+    focal_length=1000.0,
+    min_depth=0.1,
+    max_depth=100.0
 ):
     """
     Triangulate 3D points from disparity map.
@@ -155,6 +157,8 @@ def triangulate_points(
         disparity (torch.Tensor): Disparity map [B, 1, H, W]
         baseline (float): Camera baseline (default: 1.0)
         focal_length (float): Focal length (default: 1000.0)
+        min_depth (float): Minimum valid depth (default: 0.1)
+        max_depth (float): Maximum valid depth (default: 100.0)
     
     Returns:
         torch.Tensor: Depth map [B, 1, H, W]
@@ -162,8 +166,8 @@ def triangulate_points(
     # Depth = (baseline * focal_length) / disparity
     depth = (baseline * focal_length) / (disparity + 1e-8)
     
-    # Clip to reasonable range
-    depth = torch.clamp(depth, min=0.1, max=100.0)
+    # Clip to specified range
+    depth = torch.clamp(depth, min=min_depth, max=max_depth)
     
     return depth
 

@@ -104,11 +104,15 @@ class CalibrationEstimator(nn.Module):
         # Encode global context
         context = self.context_encoder(global_features)
         
+        # Scale factor range constants
+        SCALE_MIN = 0.8
+        SCALE_RANGE = 0.4  # (0.8 to 1.2)
+        
         # Predict calibration parameters
         vertical_offset = self.vertical_offset_head(context)  # [B, 1]
         rotation = self.rotation_head(context)  # [B, 3]
         scale = torch.sigmoid(self.scale_head(context))  # [B, 1], range (0, 1)
-        scale = 0.8 + 0.4 * scale  # Map to range (0.8, 1.2)
+        scale = SCALE_MIN + SCALE_RANGE * scale  # Map to range (0.8, 1.2)
         
         # Estimate uncertainty
         uncertainty = F.softplus(self.uncertainty_head(context))  # [B, 5]
