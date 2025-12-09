@@ -1,0 +1,20 @@
+# Core dependencies
+torch>=1.10.0
+torchvision>=0.11.0
+numpy>=1.21.0
+pillow>=8.3.0
+pyyaml>=5.4.0
+
+# Training and evaluation
+tensorboard>=2.7.0
+tqdm>=4.62.0
+
+# Visualization
+matplotlib>=3.4.0
+
+# Data processing
+scipy>=1.7.0
+
+# Optional: for specific datasets
+# opencv-python>=4.5.0
+# imageio>=2.9.0
