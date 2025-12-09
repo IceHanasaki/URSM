@@ -1,0 +1,60 @@
+# Configuration for Foundation Stereo with monocular priors
+
+# Model configuration
+model:
+  max_disparity: 192
+  feature_channels: 32
+  use_monocular_prior: true  # Enable monocular depth prior
+  monocular_model_name: 'dpt_hybrid'  # Options: 'dpt_hybrid', 'midas', 'depth_anything'
+  search_range: 32  # Search range around monocular prior (pixels)
+
+# Data configuration
+data:
+  train_dir: "data/train"
+  val_dir: "data/val"
+  test_dir: "data/test"
+  dataset_type: "custom"  # Options: 'custom', 'sceneflow', 'kitti', 'middlebury'
+
+# Data augmentation
+augmentation:
+  vertical_offset_range: [-5, 5]  # Smaller range for calibrated data
+  rotation_range: [-1, 1]  # Smaller rotation range
+  scale_range: [0.98, 1.02]  # Smaller scale variation
+  photometric: true
+
+# Training configuration
+training:
+  num_epochs: 100
+  batch_size: 4
+  val_batch_size: 1
+  num_workers: 8
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  lr_milestones: [50, 70, 90]
+  lr_gamma: 0.5
+  log_interval: 10
+  checkpoint_interval: 5
+
+# Loss configuration
+loss:
+  disparity_loss_type: "smooth_l1"  # Options: 'l1', 'smooth_l1', 'l2'
+  uncertainty_weight: true
+  smoothness_alpha: 0.1
+  edge_aware: true
+  prior_weight: 0.2  # Weight for monocular prior consistency loss
+
+# Monocular prior settings
+monocular:
+  enable_prior: true
+  confidence_threshold: 0.5  # Threshold for trusting monocular prior
+  adaptive_search: true  # Adapt search range based on confidence
+  prior_refinement: true  # Refine monocular prior with stereo cues
+
+# Evaluation
+evaluation:
+  metrics:
+    - epe
+    - bad_1
+    - bad_2
+    - bad_3
+    - d1_error
