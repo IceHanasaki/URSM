@@ -13,6 +13,9 @@ from .ctc_alignment import CTCAlignmentModule
 from .parity_check_correction import SparseParityCheckCorrection
 from .ursm_ctc import URSMNetCTC, URSMNetCTCLoss
 
+# Foundation Stereo with monocular priors
+from .foundation_stereo import FoundationStereo, MonocularPriorEncoder, PriorGuidedCostVolume
+
 __all__ = [
     'URSMNet',
     'FeatureExtractor',
@@ -23,5 +26,9 @@ __all__ = [
     'CTCAlignmentModule',
     'SparseParityCheckCorrection',
     'URSMNetCTC',
-    'URSMNetCTCLoss'
+    'URSMNetCTCLoss',
+    # Foundation Stereo
+    'FoundationStereo',
+    'MonocularPriorEncoder',
+    'PriorGuidedCostVolume'
 ]

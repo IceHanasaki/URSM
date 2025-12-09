@@ -31,6 +31,13 @@ URSM (Unrectified Stereo Matching) addresses the challenging problem of stereo d
 - **Error Correction**: Sparse parity check correction for geometric consistency
 - **See**: [CTC Alignment Documentation](docs/CTC_ALIGNMENT.md) for details
 
+### 🌟 **NEW: Foundation Stereo** (Monocular Prior-Guided Matching)
+- **Monocular Priors**: Leverage pre-trained depth models (DPT, MiDaS, Depth Anything)
+- **Prior-Guided Search**: Focus matching around monocular predictions (faster, more accurate)
+- **Confidence Weighting**: Intelligent fusion based on prior reliability
+- **Best of Both**: Combines semantic understanding (monocular) + metric accuracy (stereo)
+- **See**: [Foundation Stereo Documentation](docs/FOUNDATION_STEREO.md) for details
+
 ### 📊 Comprehensive Toolkit
 - **Training Framework**: Complete training pipeline with multi-GPU support
 - **Evaluation Tools**: Standard stereo metrics (EPE, Bad Pixels, D1-error)
@@ -39,7 +46,7 @@ URSM (Unrectified Stereo Matching) addresses the challenging problem of stereo d
 
 ## Architectures
 
-URSM provides two complementary approaches to stereo matching:
+URSM provides three complementary approaches to stereo matching:
 
 ### Approach 1: Calibration-Aware Matching (Original)
 
@@ -88,6 +95,31 @@ Right Image ─┘                          ↓
 - Sparse parity check correction (geometric consistency)
 
 See [CTC Alignment Documentation](docs/CTC_ALIGNMENT.md) for detailed explanation.
+
+### Approach 3: Foundation Stereo (Monocular Prior-Guided)
+
+Leverages pre-trained monocular depth models to guide stereo matching:
+
+```
+Left Image ──┐
+             ├──> Monocular Depth Model ──> Depth Prior ──> Disparity Prior
+             │                                                      ↓
+             ├──> Feature Extractor ────────────────> Prior Encoder + Confidence
+             │                                                      ↓
+Right Image ─┘                               Prior-Guided Cost Volume
+                                                      ↓
+                                            Disparity Regression
+                                                      ↓
+                                            Final Disparity + Uncertainty
+```
+
+**Key Features**:
+- Uses monocular priors from DPT, MiDaS, or Depth Anything
+- Prior-guided search (focused matching around prior)
+- Confidence-weighted fusion (balance prior and stereo)
+- Especially effective in textureless regions
+
+See [Foundation Stereo Documentation](docs/FOUNDATION_STEREO.md) for detailed explanation.
 
 ## Installation
 
